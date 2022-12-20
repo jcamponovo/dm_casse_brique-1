@@ -10,6 +10,18 @@ pyxel.init(128, 128, title="Nuit du c0de")
 plateforme_x = 50
 plateforme_y = 100
 
+import pyxel, random
+
+# pip install -U pyxel
+
+# taille de la fenetre 128x128 pixels
+# ne pas modifier
+pyxel.init(128, 128, title="Casse Brique")
+
+# position initiale du plateforme
+plateforme_x = 50
+plateforme_y = 100
+
 # position de depart de la balle
 balle_x = 60
 balle_y = 70
@@ -35,8 +47,7 @@ def plateforme_deplacement(x):
 
 
 def balle_deplacement(x, y, forceVertical, forceHorizontal, vie_joueur):
-    """ fonction qui s'occupe des deplacements
-    de la balle qui va vers le bas et les collision avec la plateforme"""
+    """ fonction qui s'occupe des deplacements de la balle qui va vers le bas et les collision avec la plateforme"""
     y = y + forceVertical
     x = x + forceHorizontal
     if y >= 127:
@@ -49,8 +60,8 @@ def balle_deplacement(x, y, forceVertical, forceHorizontal, vie_joueur):
 
 def creation_brique(briques):
     """affichage successif des briques les unes à la suite des autres avec comme paramètres de position i et k."""
-    for y in range(5, 50, 5):
-        for x in range(10, 120, 10):
+    for y in range(5, 50, 9):
+        for x in range(5, 120, 13):
             v = random.randint(1, 3)
             briques.append((x, y, v))
     return briques
@@ -59,28 +70,40 @@ def creation_brique(briques):
 def collision(balle_x, balle_y, forceVertical, briques, forceHorizontal):
     """fonction qui gère les collisions entre la balle et les briques"""
     for b in briques:
-        # si la balle tape en dessous de la brique
-        if balle_x + 2 <= b[0] + 8 and balle_y + 2 <= b[1] + 2 and balle_x + 2 >= b[0] and balle_y + 2 >= b[1] + 4:
-            forceVertical = 1
+        # si la balle tape au dessus de la brique
+        if balle_x + 2 <= b[0] + 12 and balle_y + 2 <= b[1] + 2 and balle_x + 2 >= b[0] and balle_y + 2 >= b[1] :
+            forceVertical = -1
             briques.remove(b)
             break
         # si la balle arrive sur le coté gauche
-        elif balle_x + 2 <= b[0] + 1 and balle_y + 2<= b[1] + 1 and balle_x + 2 >= b[0] and balle_y + 2 >= b[1]:
+        elif balle_x + 2 <= b[0] +3 and balle_y + 2 <= b[1] +6 and balle_x + 2 >= b[0] and balle_y + 2 >= b[1]+2:
             forceVertical = 1
             forceHorizontal = -1
             briques.remove(b)
             break
         # si la balle arrive à droite
-        elif balle_x + 2 <= b[0] + 8 and balle_y <= b[1] + 2 and balle_x + 2 >= b[0] and balle_y + 2 >= b[1]:
+        elif balle_x + 2 <= b[0] + 12 and balle_y <= b[1] + 6 and balle_x + 2 >= b[0]+9 and balle_y + 2 >= b[1]+2:
             forceVertical = 1
             forceHorizontal = 1
             briques.remove(b)
             break
-        # si la balle arrive au dessus
-        elif balle_x + 2 <= b[0] + 8 and balle_y + 2 <= b[1] - 5 and balle_x + 2 >= b[0] and balle_y + 2 >= b[1] - 2:
-            forceVertical = -1
-            briques.remove(b)
-            break
+        # si la balle arrive en  dessous
+        elif balle_x + 2 <= b[0] + 12 and balle_y + 2 <= b[1] + 8 and balle_x + 2 >= b[0] and balle_y + 2 >= b[1] + 6:
+            #si la balle en bas à gauche*
+            if balle_x + 2 <= b[0] + 3 and balle_y + 2 <= b[1] + 8 and balle_x + 2 >= b[0] -1 and balle_y + 2 >= b[1] + 6:
+                forceVertical = 1
+                forceHorizontal = -1
+                briques.remove(b)
+                break
+            elif balle_x + 2 <= b[0] + 12 and balle_y + 2 <= b[1] + 8 and balle_x + 2 >= b[0] + 9 and balle_y + 2 >= b[1] + 6:
+                forceVertical = 1
+                forceHorizontal = 1
+                briques.remove(b)
+                break
+            else:
+                forceVertical = 1
+                briques.remove(b)
+                break
 
     return forceVertical, briques, forceHorizontal
 
@@ -139,7 +162,7 @@ def draw():
 
         # dessin des briques
         for i in briques:
-            pyxel.rect(i[0], i[1], 8, 2, i[2]+6)
+            pyxel.rect(i[0], i[1], 12, 8, i[2]+6)
         if not briques:
             pyxel.cls(0)
             pyxel.text(50, 50, "bien jouer :)", 6)
@@ -154,3 +177,4 @@ def draw():
 # creation des briques
 briques = creation_brique(briques)
 pyxel.run(update, draw)
+
